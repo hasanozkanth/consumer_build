@@ -1,0 +1,53 @@
+name: FlutterFlow Export and Build APK
+
+on:
+  push:
+    branches:
+      - main  # Veya hangi branch'i kullanıyorsan
+  workflow_dispatch: # Manuel tetikleme için
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x' # Projenin kullandığı sürüme göre güncelleyebilirsin
+          channel: 'stable'
+
+      - name: Install FlutterFlow CLI
+        run: dart pub global activate flutterflow_cli
+
+      - name: Export Code from FlutterFlow
+        env:
+          FF_TOKEN: ${{ secrets.FLUTTERFLOW_API_TOKEN }}
+        run: |
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          flutterflow export-code --project things-happen-consumer-w17r4e --project-environment Production --include-assets --token $FF_TOKEN --output-directory exported_code
+
+      - name: Get Dependencies
+        run: |
+          cd exported_code
+          flutter pub get
+
+      - name: Build APK
+        run: |
+          cd exported_code
+          flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: exported_code/build/app/outputs/flutter-apk/app-release.apk
