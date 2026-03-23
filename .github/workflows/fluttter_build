@@ -1,10 +1,10 @@
-name: FlutterFlow Export and Build APK
+name: Manual FlutterFlow APK Build
 
 on:
+  workflow_dispatch: # Bu satır manuel tetikleme butonunu aktif eder
   push:
     branches:
-      - main  # Veya hangi branch'i kullanıyorsan
-  workflow_dispatch: # Manuel tetikleme için
+      - main # İstersen push edildiğinde de çalışmaya devam eder, istemiyorsan bu kısmı silebilirsin
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x' # Projenin kullandığı sürüme göre güncelleyebilirsin
+          flutter-version: '3.x'
           channel: 'stable'
 
       - name: Install FlutterFlow CLI
@@ -49,5 +49,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
+          name: release-apk-${{ github.run_number }}
           path: exported_code/build/app/outputs/flutter-apk/app-release.apk
