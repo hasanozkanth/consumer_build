@@ -1,10 +1,10 @@
 name: Manual FlutterFlow APK Build
 
 on:
-  workflow_dispatch: # Bu satır manuel tetikleme butonunu aktif eder
+  workflow_dispatch: # Manuel tetikleme için
   push:
     branches:
-      - main # İstersen push edildiğinde de çalışmaya devam eder, istemiyorsan bu kısmı silebilirsin
+      - main # Main branch'e push yapıldığında da çalışır
 
 jobs:
   build:
@@ -34,7 +34,14 @@ jobs:
           FF_TOKEN: ${{ secrets.FLUTTERFLOW_API_TOKEN }}
         run: |
           export PATH="$PATH":"$HOME/.pub-cache/bin"
-          flutterflow export-code --project things-happen-consumer-w17r4e --project-environment Production --include-assets --token 8a1a8258-98aa-4422-b215-b6c3c19b6e01 --output-directory exported_code
+          
+          # Kodu dışarı aktar (CLI varsayılan proje adını kullanacaktır)
+          flutterflow export-code --project things-happen-consumer-w17r4e --project-environment Production --include-assets --token $FF_TOKEN
+          
+          # Çıkan klasörü 'exported_code' olarak adlandır (İsim ne olursa olsun bulur ve değiştirir)
+          # FlutterFlow genelde proje ID'sinin ilk kısmını veya snake_case halini kullanır.
+          # ls -d */ komutuyla oluşan klasörü yakalayıp ismini değiştiriyoruz.
+          mv things_happen_consumer* exported_code 2>/dev/null || mv things-happen-consumer* exported_code 2>/dev/null || true
 
       - name: Get Dependencies
         run: |
