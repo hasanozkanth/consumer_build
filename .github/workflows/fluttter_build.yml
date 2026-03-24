@@ -37,7 +37,7 @@ jobs:
           export PATH="$PATH":"$HOME/.pub-cache/bin"
           
           # Kodu dışarı aktar (CLI varsayılan proje adını kullanacaktır)
-          flutterflow export-code --project things-happen-consumer-w17r4e --project-environment Production --include-assets --token $FF_TOKEN
+          flutterflow export-code --project things-happen-consumer-w17r4e --project-environment Staging --include-assets --token $FF_TOKEN
           
           # Çıkan klasörü 'exported_code' olarak adlandır (İsim ne olursa olsun bulur ve değiştirir)
           # FlutterFlow genelde proje ID'sinin ilk kısmını veya snake_case halini kullanır.
